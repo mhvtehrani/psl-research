@@ -112,3 +112,8 @@ path_length=25 \
 action_repeat=1 \
 experiment_id=diagnose_psl_train_start_seed1k \
 device=cpu 2>&1 | tee diagnose_psl_train_start_seed1k.log
+
+# Planseqlearn Repo Training Commands
+
+## Robosuite 
+python planseqlearn/launch_scripts/psl_robosuite.py
