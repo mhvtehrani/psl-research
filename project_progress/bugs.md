@@ -1,7 +1,8 @@
 # PSL Debug Log
 
-## Run 1 — First Attempt
+# First Test (RL runs?)
 
+## Run 1
 **Command:**
 python planseqlearn/train.py \
 agent=drqv2 \
@@ -188,4 +189,48 @@ add device=cpu to command
 **Result**
 SUCCESS, RL is actively training. This means Robosuite + DrQ-v2 training pipeline works on this laptop in WSL using CPU
 
-However, CPU RL training is too heavy for this computer. Solution is needed for processing unit.
+However, CPU RL training is too heavy for active computer, **system crashed at ~8000 frames**. Solution is needed for processing unit.
+
+## Run 14 - Decrease to 6000 frames
+
+**Result**
+Decreasing to 6000 frames allowed an output to be achieved, an increasing rate is seen in the rewards outputs after 4000 frames
+
+
+
+# Second Test (works with pls=true ?)
+
+## Run 1
+
+**Command** 
+MUJOCO_GL=osmesa HYDRA_FULL_ERROR=1 python planseqlearn/train.py \
+agent=drqv2 \
+use_wandb=False \
+seed=2 \
+debug=True \
+save_video=False \
+num_train_frames=1000 \
+camera_name=robot0_eye_in_hand \
+eval_every_frames=500 \
+num_eval_episodes=1 \
+task=robosuite_Lift \
+psl=True \
+path_length=25 \
+action_repeat=1 \
+experiment_id=smoke_lift_psl_true_1k_seed2_osmesa \
+device=cpu
+
+**Error**
+MUJOCO_GL=osmesa was being ignored and the run kept using EGL.
+
+**Cause**
+planseqlearn/train.py was hardcoding the rendering backend:
+os.environ["MUJOCO_GL"] = "egl"
+
+**Fix**
+Changed line 23 in planseqlearn/train.py to:
+os.environ.setdefault("MUJOCO_GL", "egl")
+
+**Result**
+MUJOCO_GL=osmesa was respected on rerun. The clean psl=True smoke test used OSMesa, generated the expected text plan ('red cube', 'grasp'), reached evaluation, and avoided the previous EGL cleanup error.
+

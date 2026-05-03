@@ -20,7 +20,7 @@ def main(cfg):
     from pathlib import Path
 
     os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
-    os.environ["MUJOCO_GL"] = "egl"
+    os.environ.setdefault("MUJOCO_GL", "egl")
     os.environ["D4RL_SUPPRESS_IMPORT_ERROR"] = "1"
 
     import hydra
